@@ -27,12 +27,12 @@ module water_isotopes
 
   use shr_kind_mod,  only: r8 => shr_kind_r8
 !  use abortutils,    only: endrun
-  use shr_const_mod, only: SHR_CONST_TKTRIP
-!                           SHR_CONST_RSTD_H2ODEV, &
-!                           SHR_CONST_VSMOW_16O, &
-!                           SHR_CONST_VSMOW_18O, &
-!                           SHR_CONST_VSMOW_D , &
-!                           SHR_CONST_VSMOW_H
+  use shr_const_mod, only: SHR_CONST_TKTRIP, &
+                           SHR_CONST_RSTD_H2ODEV, &
+                           SHR_CONST_VSMOW_16O, &
+                           SHR_CONST_VSMOW_18O, &
+                           SHR_CONST_VSMOW_D , &
+                           SHR_CONST_VSMOW_H 
 
   implicit none
 
@@ -114,6 +114,12 @@ module water_isotopes
   real(r8), dimension(pwtspec), parameter :: &  ! isotopic subs.
       fisub = (/ 1._r8, 1._r8, 2._r8, 1._r8 /)
 
+  real(r8), dimension(pwtspec), parameter :: &  ! molecular weights
+      mwisp = (/ 18._r8, 18._r8, 19._r8, 20._r8 /)
+
+  real(r8), dimension(pwtspec), parameter :: &  ! mol. weight ratio
+      epsmw = (/ 1._r8, 1._r8, 19._r8/18._r8, 20._r8/18._r8 /)
+
   ! TBD: Ideally this should be controlled by something like a namelist parameter,
   ! but it needs to be something that can be made consistent between models.
   real(r8), dimension(pwtspec), parameter :: &  ! diffusivity ratio (note D/H, not HDO/H2O)
@@ -122,7 +128,11 @@ module water_isotopes
 !      difrm = (/ 1._r8, 1._r8, 0.9836504_r8, 0.9686999_r8 /)   ! this with expk
 !      difrm = (/ 1._r8, 1._r8, 0.9755_r8, 0.9723_r8 /)         ! Merlivat 1978 (tuned for isoCAM3)
        difrm = (/ 1._r8, 1._r8, 0.9757_r8, 0.9727_r8 /)         ! Merlivat 1978 (direct from paper)
-!      difrm = (/ 1._r8, 1._r8, 0.9839_r8, 0.9691_r8 /)         ! Cappa etal 2003
+!      difrm = (/ 1._r8, 1._r8, 0.9839_r8, 0.9691_r8 /)         ! Cappa etal 2003 
+
+! Isotopic ratios in natural abundance (SMOW)
+  real(r8), dimension(pwtspec), parameter :: &  ! SMOW isotope ratios
+      rnat  = (/ 1._r8, 0.9976_r8, 155.76e-6_r8, 2005.20e-6_r8 /)
 
 ! Prescribed isotopic ratios (largely arbitrary and tunable)
   real(r8), dimension(pwtspec), parameter :: &  ! model standard isotope ratio
