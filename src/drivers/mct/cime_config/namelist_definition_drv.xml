@@ -136,6 +136,7 @@
       <value BGC_MODE=".*_OI">.true.</value>
     </values>
   </entry>
+-->
 
   <entry  id="flds_wiso" modify_via_xml="FLDS_WISO">
     <type>logical</type>
@@ -147,8 +148,8 @@
     <values>
       <value>$FLDS_WISO</value>
     </values>
-  </entry>
--->
+</entry>
+
   <entry  id="glc_nec" modify_via_xml="GLC_NEC">
     <type>integer</type>
     <category>seq_flds</category>

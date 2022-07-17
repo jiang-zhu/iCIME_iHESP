@@ -122,6 +122,12 @@ module water_isotopes
   real(r8), dimension(pwtspec), parameter :: &  ! SMOW isotope ratios
       rnat  = (/ 1._r8, 0.9976_r8, 155.76e-6_r8, 2005.20e-6_r8, 402.00e-6_r8, 77.88e-06_r8 /)
 
+  real(r8), dimension(pwtspec), parameter :: &  ! molecular weights
+      mwisp = (/ 18._r8, 18._r8, 19._r8, 20._r8 /)
+
+  real(r8), dimension(pwtspec), parameter :: &  ! mol. weight ratio
+      epsmw = (/ 1._r8, 1._r8, 19._r8/18._r8, 20._r8/18._r8 /)
+
   ! TBD: Ideally this should be controlled by something like a namelist parameter,
   ! but it needs to be something that can be made consistent between models.
   ! NOTE:  HT16O values pulled from GISS ModelE2.1 and isoCAM3
