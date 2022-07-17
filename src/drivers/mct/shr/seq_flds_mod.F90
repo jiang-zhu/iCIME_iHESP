@@ -470,35 +470,35 @@ module seq_flds_mod
      !----------------------------------------------------------
 
      call seq_flds_add(dom_coord,'lat')
-     longname = ''
+     longname = 'latitude'
      stdname  = 'latitude'
      units    = 'degrees north'
      attname  = 'lat' 
      call metadata_set(attname, longname, stdname, units)
 
      call seq_flds_add(dom_coord,'lon')
-     longname = ''
+     longname = 'longitude'
      stdname  = 'longitude'
      units    = 'degrees east'
      attname  = 'lon' 
      call metadata_set(attname, longname, stdname, units)
 
      call seq_flds_add(dom_other,'area')
-     longname = ''
+     longname = 'cell_area_model'
      stdname  = 'cell area'
      units    = 'radian^2'
      attname  = 'area' 
      call metadata_set(attname, longname, stdname, units)
 
      call seq_flds_add(dom_other,'aream')
-     longname = ''
+     longname = 'cell_area_mapping'
      stdname  = 'cell area from mapping file'
      units    = 'radian^2'
      attname  = 'aream'
      call metadata_set(attname, longname, stdname, units)
 
      call seq_flds_add(dom_other,'mask')
-     longname = ''
+     longname = 'mask'
      stdname  = 'mask'
      units    = 'unitless'
      attname  = 'mask'
@@ -523,6 +523,15 @@ module seq_flds_mod
      stdname  = 'height'
      units    = 'm'
      attname  = 'Sa_z'
+     call metadata_set(attname, longname, stdname, units)
+
+     ! topographic height (m)
+     call seq_flds_add(a2x_states,"Sa_topo")
+     call seq_flds_add(x2l_states,"Sa_topo")
+     longname = 'Surface height'
+     stdname  = 'height'
+     units    = 'm'
+     attname  = 'Sa_topo'
      call metadata_set(attname, longname, stdname, units)
 
      ! zonal wind at the lowest model level (m/s)
