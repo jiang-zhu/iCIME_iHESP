@@ -18,9 +18,14 @@ import subprocess, argparse
 subprocess.call('/bin/rm -f $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
 import six
 from six import assertRaisesRegex
-import stat as osstat
-
 import collections
+
+try:
+    collectionsABC = collections.abc
+except AttributeError:
+    collectionsABC = collections
+
+import stat as osstat
 
 from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, safe_copy, CIMEError, get_cime_root
 import get_tests
@@ -69,6 +74,14 @@ ERRPUT: %s
     test_obj.assertEqual(stat, expected_stat, msg=msg)
 
     return output
+
+def threadisAlive(run_thread):
+    try:
+        threadisAlive = run_thread.isAlive()
+    except AttributeError:
+        threadisAlive = run_thread.is_alive()
+    return threadisAlive
+
 
 ###############################################################################
 def assert_test_status(test_obj, test_name, test_status_obj, test_phase, expected_stat):
@@ -892,14 +905,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -912,14 +925,14 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5) # Kinda hacky
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         with TestStatus(test_dir=os.path.join(self._testdir_unfinished2, "5")) as ts:
             ts.set_status(RUN_PHASE, TEST_PASS_STATUS)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -933,13 +946,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -955,7 +968,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
@@ -973,13 +986,13 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         kill_python_subprocesses(signal.SIGTERM, expected_num_killed=1, tester=self)
 
         run_thread.join(timeout=10)
 
-        self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
 
         assert_dashboard_has_build(self, build_name)
@@ -1010,7 +1023,7 @@ class M_TestWaitForTests(unittest.TestCase):
 
         time.sleep(5)
 
-        self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited")
+        self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited")
 
         for core_phase in CORE_PHASES[1:]:
             with TestStatus(test_dir=os.path.join(self._testdir_teststatus1, "0")) as ts:
@@ -1019,10 +1032,10 @@ class M_TestWaitForTests(unittest.TestCase):
             time.sleep(5)
 
             if core_phase != last_phase:
-                self.assertTrue(run_thread.isAlive(), msg="wait_for_tests should have waited after passing phase {}".format(core_phase))
+                self.assertTrue(threadisAlive(run_thread), msg="wait_for_tests should have waited after passing phase {}".format(core_phase))
             else:
                 run_thread.join(timeout=10)
-                self.assertFalse(run_thread.isAlive(), msg="wait_for_tests should have finished after phase {}".format(core_phase))
+                self.assertFalse(threadisAlive(run_thread), msg="wait_for_tests should have finished after phase {}".format(core_phase))
                 break
 
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
@@ -1468,7 +1481,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
 
         run_thread.join(timeout=30)
 
-        self.assertFalse(run_thread.isAlive(), msg="jenkins_generic_job should have finished")
+        self.assertFalse(threadisAlive(run_thread), msg="jenkins_generic_job should have finished")
         self.assertTrue(self._thread_error is None, msg="Thread had failure: %s" % self._thread_error)
         assert_dashboard_has_build(self, build_name)
 
@@ -1845,14 +1858,14 @@ class K_TestCimeCase(TestCreateTestCommon):
             job_name = "case.run"
             prereq_name = 'prereq_test'
             batch_commands = case.submit_jobs(prereq=prereq_name, job=job_name, skip_pnl=True, dry_run=True)
-            self.assertTrue(isinstance(batch_commands, collections.Sequence), "case.submit_jobs did not return a sequence for a dry run")
+            self.assertTrue(isinstance(batch_commands, collectionsABC.Sequence), "case.submit_jobs did not return a sequence for a dry run")
             self.assertTrue(len(batch_commands) > 0, "case.submit_jobs did not return any job submission string")
             # The first element in the internal sequence should just be the job name
             # The second one (batch_cmd_index) should be the actual batch submission command
             batch_cmd_index = 1
             # The prerequisite should be applied to all jobs, though we're only expecting one
             for batch_cmd in batch_commands:
-                self.assertTrue(isinstance(batch_cmd, collections.Sequence), "case.submit_jobs did not return a sequence of sequences")
+                self.assertTrue(isinstance(batch_cmd, collectionsABC.Sequence), "case.submit_jobs did not return a sequence of sequences")
                 self.assertTrue(len(batch_cmd) > batch_cmd_index, "case.submit_jobs returned internal sequences with length <= {}".format(batch_cmd_index))
                 self.assertTrue(isinstance(batch_cmd[1], six.string_types), "case.submit_jobs returned internal sequences without the batch command string as the second parameter: {}".format(batch_cmd[1]))
                 batch_cmd_args = batch_cmd[1]
@@ -1885,7 +1898,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             prereq_name = "prereq_allow_fail_test"
             depend_allow = depend_allow.replace("jobid", prereq_name)
             batch_commands = case.submit_jobs(prereq=prereq_name, allow_fail=True, job=job_name, skip_pnl=True, dry_run=True)
-            self.assertTrue(isinstance(batch_commands, collections.Sequence), "case.submit_jobs did not return a sequence for a dry run")
+            self.assertTrue(isinstance(batch_commands, collectionsABC.Sequence), "case.submit_jobs did not return a sequence for a dry run")
             num_submissions = 1
             if case.get_value("DOUT_S"):
                 num_submissions = 2
@@ -1906,7 +1919,7 @@ class K_TestCimeCase(TestCreateTestCommon):
             num_submissions = 6
             case.set_value("RESUBMIT", num_submissions - 1)
             batch_commands = case.submit_jobs(job=job_name, skip_pnl=True, dry_run=True, resubmit_immediate=True)
-            self.assertTrue(isinstance(batch_commands, collections.Sequence), "case.submit_jobs did not return a sequence for a dry run")
+            self.assertTrue(isinstance(batch_commands, collectionsABC.Sequence), "case.submit_jobs did not return a sequence for a dry run")
             if case.get_value("DOUT_S"):
                 num_submissions = 12
             self.assertTrue(len(batch_commands) == num_submissions, "case.submit_jobs did not return {} submitted jobs".format(num_submissions))

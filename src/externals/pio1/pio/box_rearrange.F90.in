@@ -1662,19 +1662,18 @@ end subroutine box_rearrange_io2comp_{TYPE}
 
     endif
 
+    if(associated(iodesc%stype) .and. associated(iodesc%scount)) then
 
-    do i=1,Iosystem%num_iotasks
-       if (ioDesc%scount(i) /= 0) then
-          call MPI_TYPE_FREE(ioDesc%stype(i), ierror)
-          call CheckMPIReturn(subName,ierror)
-       endif
-    end do
+       do i=1,Iosystem%num_iotasks
+          if (ioDesc%scount(i) /= 0) then
+             call MPI_TYPE_FREE(ioDesc%stype(i), ierror)
+             call CheckMPIReturn(subName,ierror)
+          endif
+       end do
 
-    if(associated(iodesc%scount)) then
        call dealloc_check(ioDesc%scount)
        nullify(iodesc%scount)
-    end if
-    if(associated(iodesc%stype)) then
+
        call dealloc_check(ioDesc%stype,'iodesc%stype')
        nullify(iodesc%stype)
     end if

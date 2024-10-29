@@ -132,7 +132,7 @@ contains
        call mpi_comm_create(GLOBAL_COMM, mpigrp, mpicom, ierr)
        Global_COMM=mpicom
 
-       print *,__FILE__,__LINE__,subname, ' complete'
+!       print *,__FILE__,__LINE__,subname, ' complete'
 #endif
     end if
     total_comps = ncomps
@@ -189,19 +189,19 @@ contains
     allocate(iosystems(total_comps))
 
     if(pio_async_interface) then
-       call pio_init(total_comps,mpi_comm_world, comp_comm, io_comm, iosystems)
-       do i=1,total_comps
-         ret =  pio_set_rearr_opts(iosystems(i), pio_rearr_opt_comm_type,&
-                  pio_rearr_opt_fcd,&
-                  pio_rearr_opt_c2i_enable_hs, pio_rearr_opt_c2i_enable_isend,&
-                  pio_rearr_opt_c2i_max_pend_req,&
-                  pio_rearr_opt_i2c_enable_hs, pio_rearr_opt_i2c_enable_isend,&
-                  pio_rearr_opt_i2c_max_pend_req)
-         if(ret /= PIO_NOERR) then
+!       call pio_init(total_comps,mpi_comm_world, comp_comm, io_comm, iosystems)
+!       do i=1,total_comps
+!         ret =  pio_set_rearr_opts(iosystems(i), pio_rearr_opt_comm_type,&
+!                  pio_rearr_opt_fcd,&
+!                  pio_rearr_opt_c2i_enable_hs, pio_rearr_opt_c2i_enable_isend,&
+!                  pio_rearr_opt_c2i_max_pend_req,&
+!                  pio_rearr_opt_i2c_enable_hs, pio_rearr_opt_i2c_enable_isend,&
+!                  pio_rearr_opt_i2c_max_pend_req)
+!         if(ret /= PIO_NOERR) then
             write(shr_log_unit,*) "ERROR: Setting rearranger options failed"
-         end if
-       end do
-       i=1
+!         end if
+!       end do
+!       i=1
     else
        do i=1,total_comps
           if(comp_iamin(i)) then
@@ -216,6 +216,7 @@ contains
                   pio_comp_settings(i)%pio_root, pio_comp_settings(i)%pio_numiotasks, &
                   pio_comp_settings(i)%pio_iotype, pio_comp_settings(i)%pio_rearranger, &
                   pio_comp_settings(i)%pio_netcdf_ioformat)
+!             print *,__FILE__,__LINE__,i,pio_comp_settings(i)%pio_stride
              call pio_init(comp_comm_iam(i), comp_comm(i), pio_comp_settings(i)%pio_numiotasks, 0, &
                   pio_comp_settings(i)%pio_stride, &
                   pio_comp_settings(i)%pio_rearranger, iosystems(i), &
